@@ -1,0 +1,267 @@
+<div id="anime-game">
+  <style>
+    #anime-game {
+      --red: #9e252f;
+      background: #100e12;
+      color: #e8dfd0;
+      font-family: Georgia, serif;
+      padding: 28px 20px;
+      border: 1px solid #55414a;
+      max-width: 720px;
+      margin: auto;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    #anime-game * { box-sizing: border-box; }
+    #anime-game .ag-kicker {
+      color: #c58a76; letter-spacing: 4px;
+      font-size: 11px; text-transform: uppercase;
+    }
+    #anime-game h2 {
+      font-size: clamp(26px, 5vw, 40px);
+      font-weight: normal; margin: 15px 0;
+    }
+    #anime-game .ag-story {
+      color: #c5b9b5; line-height: 1.8;
+      font-size: 15px;
+    }
+    #anime-game .ag-card {
+      border: 1px solid #49343b; padding: 24px 18px;
+      margin-top: 24px; background: #19151b;
+    }
+    #anime-game .ag-number {
+      color: #c58a76; font-size: 12px;
+      letter-spacing: 3px; text-transform: uppercase;
+    }
+    #anime-game .ag-riddle {
+      font-size: 19px; line-height: 1.8;
+      white-space: pre-line; margin: 20px 0;
+    }
+    #anime-game input {
+      width: 100%; padding: 14px;
+      background: #0f0d10; color: #fff;
+      border: 1px solid #72545b; font: inherit;
+      font-size: 16px; margin: 8px 0 12px;
+    }
+    #anime-game button {
+      padding: 12px 18px; cursor: pointer;
+      font: inherit; border: 1px solid #a75a5f;
+      background: #72232d; color: white;
+      margin: 4px; transition: .2s;
+    }
+    #anime-game button:hover { background: #983642; }
+    #anime-game .ag-secondary {
+      background: transparent; border-color: #63505a;
+    }
+    #anime-game .ag-feedback {
+      min-height: 28px; line-height: 1.6;
+      color: #d6ad8d; margin-top: 12px;
+    }
+    #anime-game .ag-progress {
+      height: 4px; background: #342831; margin: 20px 0;
+    }
+    #anime-game .ag-bar {
+      height: 100%; width: 0%; background: #a43b46;
+      transition: width .4s;
+    }
+    #anime-game .ag-seals {
+      font-size: 13px; letter-spacing: 2px;
+      color: #a99aa0; line-height: 2;
+    }
+    #anime-game .ag-hidden { display: none; }
+    #anime-game .ag-end { color: #e5b28c; }
+  </style>
+
+  <div class="ag-kicker">Un'esperienza interattiva</div>
+  <h2>La Notte delle Anime Perdute</h2>
+  <p class="ag-story" id="ag-intro">
+    La mezzanotte si avvicina. Cinque sigilli sono stati spezzati
+    e le anime vagano senza trovare la via del ritorno.
+    Risolvi gli enigmi, recupera i sigilli e completa il rituale
+    prima dell'ultimo rintocco.
+  </p>
+
+  <div class="ag-progress"><div class="ag-bar" id="ag-bar"></div></div>
+  <div class="ag-seals" id="ag-seals">
+    SIGILLI RECUPERATI: 0 / 5
+  </div>
+
+  <section class="ag-card" id="ag-card">
+    <div class="ag-number" id="ag-number">Primo sigillo</div>
+    <h3 id="ag-title">La fiamma delle anime</h3>
+    <p class="ag-story" id="ag-story">
+      Una voce emerge dall'oscurità: «Per entrare devi prima
+      riportare la luce. Ma attenzione: ogni luce ha un prezzo».
+    </p>
+    <p class="ag-riddle" id="ag-riddle"></p>
+
+    <form id="ag-form">
+      <label for="ag-answer" class="ag-story">
+        Qual è la tua risposta?
+      </label>
+      <input id="ag-answer" type="text"
+        placeholder="Scrivi la soluzione..." autocomplete="off"
+        required />
+      <button type="submit">Sblocca il sigillo</button>
+    </form>
+
+    <button type="button" class="ag-secondary" id="ag-hint">
+      Chiedi un indizio
+    </button>
+    <button type="button" class="ag-secondary ag-hidden" id="ag-next">
+      Prosegui nel buio →
+    </button>
+    <p class="ag-feedback" id="ag-feedback"
+       aria-live="polite"></p>
+  </section>
+
+  <section class="ag-card ag-hidden" id="ag-ending">
+    <div class="ag-kicker">Il rituale è compiuto</div>
+    <h2 class="ag-end">Le anime ti hanno riconosciuto.</h2>
+    <p class="ag-story">
+      L'ultimo sigillo si illumina. La campana tace e il velo
+      tra i mondi si apre. Le Anime Perdute attraversano la soglia,
+      ma prima di svanire una voce sussurra:
+    </p>
+    <p class="ag-riddle ag-end">
+      «Questa notte non appartiene né ai vivi né ai morti.
+      Appartiene a chi ha avuto il coraggio di cercarci.
+      Ora entra... la festa può cominciare».
+    </p>
+    <p class="ag-seals">BENVENUTO ALLA NOTTE DELLE ANIME PERDUTE</p>
+    <button type="button" id="ag-restart">Ricomincia il rituale</button>
+  </section>
+
+  <script>
+  (() => {
+    const root = document.getElementById('anime-game');
+    if (root.dataset.ready) return;
+    root.dataset.ready = '1';
+
+    const puzzles = [
+      {
+        title: 'La fiamma delle anime',
+        story: 'Una voce emerge dall’oscurità: «Per entrare devi prima riportare la luce. Ma attenzione: ogni luce ha un prezzo».',
+        riddle: 'Non sono viva, eppure consumo la mia vita.\nPiango senza occhi e scaccio il buio.\nQuando finisco, lascio solo il silenzio.\nChe cosa sono?',
+        answers: ['candela', 'una candela'],
+        hint: 'La trovi spesso accesa durante una veglia o in un luogo infestato.',
+        success: 'La fiamma si accende da sola. Sul muro appare una scritta: «Cerca ciò che riflette, ma non racconta sempre la verità».'
+      },
+      {
+        title: 'Lo specchio che mente',
+        story: 'Una porta appare dietro una tenda. Non ha maniglia. Al suo posto c’è uno specchio annerito.',
+        riddle: 'Non ho memoria, ma ti mostro il passato.\nNon ho bocca, ma ripeto ogni tuo gesto.\nTi mostro un mondo capovolto.\nQuale oggetto custodisce il passaggio?',
+        answers: ['specchio', 'lo specchio'],
+        hint: 'Non è una finestra, anche se sembra mostrarti un altro mondo.',
+        success: 'Il vetro si incrina e rivela un orologio fermo. Sul quadrante compare un numero: «L’ora proibita è legata a ciò che viene dopo il dodici».'
+      },
+      {
+        title: 'L’ora proibita',
+        story: 'Il corridoio conduce a una stanza con tredici candele. L’orologio non ha lancette, ma una frase incisa sul bordo.',
+        riddle: 'Una dozzina di rintocchi non basta.\nUno in più apre il velo.\nQuale numero devi pronunciare?',
+        answers: ['13', 'tredici'],
+        hint: 'Conta dodici e aggiungi un’unità.',
+        success: 'Le candele si spengono tutte insieme. Nel buio senti una campana: «Per risvegliarmi, scopri che cosa emette il suono che ti ha guidato fin qui».'
+      },
+      {
+        title: 'Il rintocco dei dannati',
+        story: 'Davanti a te c’è una cappella abbandonata. Una grande campana pende sopra un altare ricoperto di polvere.',
+        riddle: 'Non ho voce, ma posso chiamare i morti.\nNon ho gambe, ma il mio suono viaggia lontano.\nQuando mi colpisci, tutti ascoltano.\nChe cosa sono?',
+        answers: ['campana', 'la campana'],
+        hint: 'È appesa in molte torri e annuncia le ore o le cerimonie.',
+        success: 'Il rintocco scuote le pareti. Una voce sussurra: «Hai trovato la luce, il riflesso, l’ora e il richiamo. Ma cosa chiedono le anime a chi è ancora vivo?»'
+      },
+      {
+        title: 'Il patto delle Anime Perdute',
+        story: 'Le quattro prove sono superate. Una figura velata ti attende oltre l’altare, con un ultimo messaggio tra le mani.',
+        riddle: 'Non sono un oggetto, né una porta.\nImpedisco a chi è scomparso di svanire del tutto.\nVivo nella mente e nel cuore di chi resta.\nChe cosa devi fare per salvare le anime?',
+        answers: ['ricordare', 'ricorda', 'ricordo', 'ricordarle'],
+        hint: 'È ciò che facciamo quando custodiamo la storia di qualcuno che non c’è più.',
+        success: 'La figura si inchina. «Finché qualcuno ci ricorda, non siamo perduti». I cinque sigilli sono riuniti.'
+      }
+    ];
+
+    let current = 0;
+    let hintUsed = false;
+    const $ = id => root.querySelector('#' + id);
+
+    function normalize(value) {
+      return value.toLocaleLowerCase('it')
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[.,!?;:'"«»]/g, '')
+        .trim().replace(/\s+/g, ' ');
+    }
+
+    function render() {
+      const p = puzzles[current];
+      $('ag-number').textContent =
+        'Sigillo ' + (current + 1) + ' di 5';
+      $('ag-title').textContent = p.title;
+      $('ag-story').textContent = p.story;
+      $('ag-riddle').textContent = p.riddle;
+      $('ag-answer').value = '';
+      $('ag-answer').disabled = false;
+      $('ag-feedback').textContent = '';
+      $('ag-form').classList.remove('ag-hidden');
+      $('ag-hint').classList.remove('ag-hidden');
+      $('ag-next').classList.add('ag-hidden');
+      $('ag-next').textContent =
+        current === 4 ? 'Completa il rituale →' : 'Prosegui nel buio →';
+      $('ag-bar').style.width = (current / 5 * 100) + '%';
+      $('ag-seals').textContent =
+        'SIGILLI RECUPERATI: ' + current + ' / 5';
+      hintUsed = false;
+      $('ag-answer').focus();
+    }
+
+    $('ag-form').addEventListener('submit', event => {
+      event.preventDefault();
+      const answer = normalize($('ag-answer').value);
+      if (!answer) return;
+      const p = puzzles[current];
+
+      if (p.answers.some(a => normalize(a) === answer)) {
+        $('ag-feedback').textContent = '✦ ' + p.success;
+        $('ag-form').classList.add('ag-hidden');
+        $('ag-hint').classList.add('ag-hidden');
+        $('ag-next').classList.remove('ag-hidden');
+        $('ag-bar').style.width = ((current + 1) / 5 * 100) + '%';
+        $('ag-seals').textContent =
+          'SIGILLI RECUPERATI: ' + (current + 1) + ' / 5';
+      } else {
+        $('ag-feedback').textContent =
+          'La risposta non convince gli spiriti. Riprova...';
+      }
+    });
+
+    $('ag-hint').addEventListener('click', () => {
+      const p = puzzles[current];
+      $('ag-feedback').textContent = hintUsed
+        ? 'L’indizio è già stato rivelato: rileggilo e ascolta le ombre.'
+        : 'Indizio: ' + p.hint;
+      hintUsed = true;
+    });
+
+    $('ag-next').addEventListener('click', () => {
+      if (current < puzzles.length - 1) {
+        current++;
+        render();
+      } else {
+        $('ag-card').classList.add('ag-hidden');
+        $('ag-ending').classList.remove('ag-hidden');
+        $('ag-bar').style.width = '100%';
+        $('ag-seals').textContent = 'SIGILLI RECUPERATI: 5 / 5';
+      }
+    });
+
+    $('ag-restart').addEventListener('click', () => {
+      current = 0;
+      $('ag-ending').classList.add('ag-hidden');
+      $('ag-card').classList.remove('ag-hidden');
+      render();
+    });
+
+    render();
+  })();
+  </script>
+</div>
