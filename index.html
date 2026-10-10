@@ -1,277 +1,233 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>La Notte delle Anime Perdute</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La Notte delle Anime Perdute</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;background:#09080c;color:#eee4d8;
+ font-family:Georgia,serif;
+}
+#game{
+ max-width:850px;margin:auto;padding:24px 18px 50px;
+ min-height:100vh;text-align:center;
+ background:radial-gradient(ellipse at top,#29141d,#100d13 60%,#070609);
+ border-left:1px solid #4c2832;border-right:1px solid #4c2832;
+}
+.kicker{letter-spacing:4px;text-transform:uppercase;color:#d29b83;font-size:11px}
+h1{font-size:clamp(30px,7vw,54px);font-weight:normal;margin:16px 0}
+h2{font-weight:normal;color:#e4b49b}
+p{line-height:1.8}
+.muted{color:#c6b6b7;line-height:1.8}
+.panel{background:#171219;border:1px solid #54333e;padding:20px;margin:18px 0}
+.stats{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#d6b7a6;font-size:13px}
+.track{height:5px;background:#38232d;margin:15px 0}
+#bar{height:100%;width:0;background:#b54650;transition:width .4s}
+button,input{font:inherit}
+button{
+ background:#702733;color:#fff;border:1px solid #b36a70;
+ padding:12px 16px;margin:5px;cursor:pointer;transition:.2s
+}
+button:hover{background:#a13a47;transform:translateY(-1px)}
+button:focus-visible,input:focus-visible{outline:2px solid #edc4a3;outline-offset:3px}
+.secondary{background:transparent;border-color:#72525d}
+input{
+ width:100%;padding:13px;background:#0d0a0f;color:white;
+ border:1px solid #76515d;margin:8px 0 12px
+}
+.objects{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:20px 0}
+.object{min-height:100px;background:#201720;border:1px solid #65404b;padding:15px}
+.object span{display:block;font-size:28px;margin-bottom:7px}
+.object small{color:#d5b9b5}
+#message{min-height:45px;color:#e9b38f;line-height:1.7}
+#inventory{display:flex;justify-content:center;flex-wrap:wrap;gap:8px}
+.item{border:1px solid #73515b;padding:7px 10px;color:#e8c9b4;font-size:13px}
+.hidden{display:none!important}
+.riddle{font-size:19px;white-space:pre-line;line-height:1.9}
+.ending{animation:glow 2s infinite alternate}
+@keyframes glow{from{text-shadow:0 0 4px #8d333d}to{text-shadow:0 0 20px #d45a61}}
+@media(max-width:450px){#game{padding:22px 12px}.objects{grid-template-columns:1fr}.panel{padding:16px}}
+</style>
 </head>
 <body>
-<div id="anime-game">
-  <style>
-    #anime-game {
-      --red: #9e252f;
-      background: #100e12;
-      color: #e8dfd0;
-      font-family: Georgia, serif;
-      padding: 28px 20px;
-      border: 1px solid #55414a;
-      max-width: 720px;
-      margin: auto;
-      text-align: center;
-      box-sizing: border-box;
-    }
-    #anime-game * { box-sizing: border-box; }
-    #anime-game .ag-kicker {
-      color: #c58a76; letter-spacing: 4px;
-      font-size: 11px; text-transform: uppercase;
-    }
-    #anime-game h2 {
-      font-size: clamp(26px, 5vw, 40px);
-      font-weight: normal; margin: 15px 0;
-    }
-    #anime-game .ag-story {
-      color: #c5b9b5; line-height: 1.8;
-      font-size: 15px;
-    }
-    #anime-game .ag-card {
-      border: 1px solid #49343b; padding: 24px 18px;
-      margin-top: 24px; background: #19151b;
-    }
-    #anime-game .ag-number {
-      color: #c58a76; font-size: 12px;
-      letter-spacing: 3px; text-transform: uppercase;
-    }
-    #anime-game .ag-riddle {
-      font-size: 19px; line-height: 1.8;
-      white-space: pre-line; margin: 20px 0;
-    }
-    #anime-game input {
-      width: 100%; padding: 14px;
-      background: #0f0d10; color: #fff;
-      border: 1px solid #72545b; font: inherit;
-      font-size: 16px; margin: 8px 0 12px;
-    }
-    #anime-game button {
-      padding: 12px 18px; cursor: pointer;
-      font: inherit; border: 1px solid #a75a5f;
-      background: #72232d; color: white;
-      margin: 4px; transition: .2s;
-    }
-    #anime-game button:hover { background: #983642; }
-    #anime-game .ag-secondary {
-      background: transparent; border-color: #63505a;
-    }
-    #anime-game .ag-feedback {
-      min-height: 28px; line-height: 1.6;
-      color: #d6ad8d; margin-top: 12px;
-    }
-    #anime-game .ag-progress {
-      height: 4px; background: #342831; margin: 20px 0;
-    }
-    #anime-game .ag-bar {
-      height: 100%; width: 0%; background: #a43b46;
-      transition: width .4s;
-    }
-    #anime-game .ag-seals {
-      font-size: 13px; letter-spacing: 2px;
-      color: #a99aa0; line-height: 2;
-    }
-    #anime-game .ag-hidden { display: none; }
-    #anime-game .ag-end { color: #e5b28c; }
-  </style>
+<main id="game">
+ <div class="kicker">Un'esperienza interattiva · Senza audio</div>
+ <h1>La Notte delle Anime Perdute</h1>
+ <p class="muted" id="intro">La porta si chiude alle tue spalle. Nella casa abbandonata cinque sigilli trattengono le anime prigioniere. Esplora ogni stanza, raccogli gli indizi e spezza la maledizione prima dell'ultimo rintocco.</p>
 
-  <div class="ag-kicker">Un'esperienza interattiva</div>
-  <h2>La Notte delle Anime Perdute</h2>
-  <p class="ag-story" id="ag-intro">
-    La mezzanotte si avvicina. Cinque sigilli sono stati spezzati
-    e le anime vagano senza trovare la via del ritorno.
-    Risolvi gli enigmi, recupera i sigilli e completa il rituale
-    prima dell'ultimo rintocco.
-  </p>
+ <div class="panel">
+  <div class="stats"><span id="stage">STANZA 1 DI 5</span><span id="count">SIGILLI: 0/5</span></div>
+  <div class="track"><div id="bar"></div></div>
+  <div class="kicker">Oggetti e indizi raccolti</div>
+  <div id="inventory"><span class="item">Inventario vuoto</span></div>
+ </div>
 
-  <div class="ag-progress"><div class="ag-bar" id="ag-bar"></div></div>
-  <div class="ag-seals" id="ag-seals">
-    SIGILLI RECUPERATI: 0 / 5
+ <section id="room" class="panel">
+  <div class="kicker" id="chapter">La casa abbandonata</div>
+  <h2 id="title">La stanza delle candele</h2>
+  <p class="muted" id="story">La polvere si solleva senza vento. Quattro oggetti sembrano fuori posto. Forse la casa sta cercando di comunicare con te.</p>
+  <div id="objects" class="objects"></div>
+  <div id="puzzle" class="hidden">
+   <p class="riddle" id="riddle"></p>
+   <form id="answerForm">
+    <label for="answer">Inserisci la soluzione o il codice</label>
+    <input id="answer" autocomplete="off" placeholder="La tua risposta..." required>
+    <button type="submit">Tenta di sbloccare</button>
+   </form>
+   <button id="hint" class="secondary" type="button">Primo indizio</button>
+   <button id="hint2" class="secondary hidden" type="button">Indizio più esplicito</button>
   </div>
+  <p id="message" aria-live="polite"></p>
+  <button id="next" class="hidden" type="button">Entra nella stanza successiva →</button>
+ </section>
 
-  <section class="ag-card" id="ag-card">
-    <div class="ag-number" id="ag-number">Primo sigillo</div>
-    <h3 id="ag-title">La fiamma delle anime</h3>
-    <p class="ag-story" id="ag-story">
-      Una voce emerge dall'oscurità: «Per entrare devi prima
-      riportare la luce. Ma attenzione: ogni luce ha un prezzo».
-    </p>
-    <p class="ag-riddle" id="ag-riddle"></p>
+ <section id="ending" class="panel hidden">
+  <div class="kicker">Il rituale è compiuto</div>
+  <h2 class="ending">Le anime sono libere.</h2>
+  <p class="muted">La campana tace. Le ombre si ritirano e la porta si apre lentamente. Una voce sussurra: «Hai attraversato il buio senza dimenticare chi vi era rimasto intrappolato».</p>
+  <p class="riddle">LA NOTTE DELLE ANIME PERDUTE TI RICORDA.</p>
+  <button id="restart" type="button">Ricomincia il rituale</button>
+ </section>
+</main>
 
-    <form id="ag-form">
-      <label for="ag-answer" class="ag-story">
-        Qual è la tua risposta?
-      </label>
-      <input id="ag-answer" type="text"
-        placeholder="Scrivi la soluzione..." autocomplete="off"
-        required />
-      <button type="submit">Sblocca il sigillo</button>
-    </form>
-
-    <button type="button" class="ag-secondary" id="ag-hint">
-      Chiedi un indizio
-    </button>
-    <button type="button" class="ag-secondary ag-hidden" id="ag-next">
-      Prosegui nel buio →
-    </button>
-    <p class="ag-feedback" id="ag-feedback"
-       aria-live="polite"></p>
-  </section>
-
-  <section class="ag-card ag-hidden" id="ag-ending">
-    <div class="ag-kicker">Il rituale è compiuto</div>
-    <h2 class="ag-end">Le anime ti hanno riconosciuto.</h2>
-    <p class="ag-story">
-      L'ultimo sigillo si illumina. La campana tace e il velo
-      tra i mondi si apre. Le Anime Perdute attraversano la soglia,
-      ma prima di svanire una voce sussurra:
-    </p>
-    <p class="ag-riddle ag-end">
-      «Questa notte non appartiene né ai vivi né ai morti.
-      Appartiene a chi ha avuto il coraggio di cercarci.
-      Ora entra... la festa può cominciare».
-    </p>
-    <p class="ag-seals">BENVENUTO ALLA NOTTE DELLE ANIME PERDUTE</p>
-    <button type="button" id="ag-restart">Ricomincia il rituale</button>
-  </section>
-
-  <script>
-  (() => {
-    const root = document.getElementById('anime-game');
-    if (root.dataset.ready) return;
-    root.dataset.ready = '1';
-
-    const puzzles = [
-      {
-        title: 'La fiamma delle anime',
-        story: 'Una voce emerge dall’oscurità: «Per entrare devi prima riportare la luce. Ma attenzione: ogni luce ha un prezzo».',
-        riddle: 'Non sono viva, eppure consumo la mia vita.\nPiango senza occhi e scaccio il buio.\nQuando finisco, lascio solo il silenzio.\nChe cosa sono?',
-        answers: ['candela', 'una candela'],
-        hint: 'La trovi spesso accesa durante una veglia o in un luogo infestato.',
-        success: 'La fiamma si accende da sola. Sul muro appare una scritta: «Cerca ciò che riflette, ma non racconta sempre la verità».'
-      },
-      {
-        title: 'Lo specchio che mente',
-        story: 'Una porta appare dietro una tenda. Non ha maniglia. Al suo posto c’è uno specchio annerito.',
-        riddle: 'Non ho memoria, ma ti mostro il passato.\nNon ho bocca, ma ripeto ogni tuo gesto.\nTi mostro un mondo capovolto.\nQuale oggetto custodisce il passaggio?',
-        answers: ['specchio', 'lo specchio'],
-        hint: 'Non è una finestra, anche se sembra mostrarti un altro mondo.',
-        success: 'Il vetro si incrina e rivela un orologio fermo. Sul quadrante compare un numero: «L’ora proibita è legata a ciò che viene dopo il dodici».'
-      },
-      {
-        title: 'L’ora proibita',
-        story: 'Il corridoio conduce a una stanza con tredici candele. L’orologio non ha lancette, ma una frase incisa sul bordo.',
-        riddle: 'Una dozzina di rintocchi non basta.\nUno in più apre il velo.\nQuale numero devi pronunciare?',
-        answers: ['13', 'tredici'],
-        hint: 'Conta dodici e aggiungi un’unità.',
-        success: 'Le candele si spengono tutte insieme. Nel buio senti una campana: «Per risvegliarmi, scopri che cosa emette il suono che ti ha guidato fin qui».'
-      },
-      {
-        title: 'Il rintocco dei dannati',
-        story: 'Davanti a te c’è una cappella abbandonata. Una grande campana pende sopra un altare ricoperto di polvere.',
-        riddle: 'Non ho voce, ma posso chiamare i morti.\nNon ho gambe, ma il mio suono viaggia lontano.\nQuando mi colpisci, tutti ascoltano.\nChe cosa sono?',
-        answers: ['campana', 'la campana'],
-        hint: 'È appesa in molte torri e annuncia le ore o le cerimonie.',
-        success: 'Il rintocco scuote le pareti. Una voce sussurra: «Hai trovato la luce, il riflesso, l’ora e il richiamo. Ma cosa chiedono le anime a chi è ancora vivo?»'
-      },
-      {
-        title: 'Il patto delle Anime Perdute',
-        story: 'Le quattro prove sono superate. Una figura velata ti attende oltre l’altare, con un ultimo messaggio tra le mani.',
-        riddle: 'Non sono un oggetto, né una porta.\nImpedisco a chi è scomparso di svanire del tutto.\nVivo nella mente e nel cuore di chi resta.\nChe cosa devi fare per salvare le anime?',
-        answers: ['ricordare', 'ricorda', 'ricordo', 'ricordarle'],
-        hint: 'È ciò che facciamo quando custodiamo la storia di qualcuno che non c’è più.',
-        success: 'La figura si inchina. «Finché qualcuno ci ricorda, non siamo perduti». I cinque sigilli sono riuniti.'
-      }
-    ];
-
-    let current = 0;
-    let hintUsed = false;
-    const $ = id => root.querySelector('#' + id);
-
-    function normalize(value) {
-      return value.toLocaleLowerCase('it')
-        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-        .replace(/[.,!?;:'"«»]/g, '')
-        .trim().replace(/\s+/g, ' ');
-    }
-
-    function render() {
-      const p = puzzles[current];
-      $('ag-number').textContent =
-        'Sigillo ' + (current + 1) + ' di 5';
-      $('ag-title').textContent = p.title;
-      $('ag-story').textContent = p.story;
-      $('ag-riddle').textContent = p.riddle;
-      $('ag-answer').value = '';
-      $('ag-answer').disabled = false;
-      $('ag-feedback').textContent = '';
-      $('ag-form').classList.remove('ag-hidden');
-      $('ag-hint').classList.remove('ag-hidden');
-      $('ag-next').classList.add('ag-hidden');
-      $('ag-next').textContent =
-        current === 4 ? 'Completa il rituale →' : 'Prosegui nel buio →';
-      $('ag-bar').style.width = (current / 5 * 100) + '%';
-      $('ag-seals').textContent =
-        'SIGILLI RECUPERATI: ' + current + ' / 5';
-      hintUsed = false;
-      $('ag-answer').focus();
-    }
-
-    $('ag-form').addEventListener('submit', event => {
-      event.preventDefault();
-      const answer = normalize($('ag-answer').value);
-      if (!answer) return;
-      const p = puzzles[current];
-
-      if (p.answers.some(a => normalize(a) === answer)) {
-        $('ag-feedback').textContent = '✦ ' + p.success;
-        $('ag-form').classList.add('ag-hidden');
-        $('ag-hint').classList.add('ag-hidden');
-        $('ag-next').classList.remove('ag-hidden');
-        $('ag-bar').style.width = ((current + 1) / 5 * 100) + '%';
-        $('ag-seals').textContent =
-          'SIGILLI RECUPERATI: ' + (current + 1) + ' / 5';
-      } else {
-        $('ag-feedback').textContent =
-          'La risposta non convince gli spiriti. Riprova...';
-      }
-    });
-
-    $('ag-hint').addEventListener('click', () => {
-      const p = puzzles[current];
-      $('ag-feedback').textContent = hintUsed
-        ? 'L’indizio è già stato rivelato: rileggilo e ascolta le ombre.'
-        : 'Indizio: ' + p.hint;
-      hintUsed = true;
-    });
-
-    $('ag-next').addEventListener('click', () => {
-      if (current < puzzles.length - 1) {
-        current++;
-        render();
-      } else {
-        $('ag-card').classList.add('ag-hidden');
-        $('ag-ending').classList.remove('ag-hidden');
-        $('ag-bar').style.width = '100%';
-        $('ag-seals').textContent = 'SIGILLI RECUPERATI: 5 / 5';
-      }
-    });
-
-    $('ag-restart').addEventListener('click', () => {
-      current = 0;
-      $('ag-ending').classList.add('ag-hidden');
-      $('ag-card').classList.remove('ag-hidden');
-      render();
-    });
-
-    render();
-  })();
-  </script>
-</div>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+const rooms=[
+{
+chapter:"La casa abbandonata",title:"La stanza delle candele",
+story:"La porta si è chiusa. Esamina gli oggetti: uno nasconde la prima prova, un altro potrebbe aiutarti.",
+objects:[
+{icon:"🕯️",name:"Candela",desc:"Una fiamma immobile",text:"La cera forma lettere: «La luce consuma se stessa per sconfiggere il buio».",clue:"La candela ha rivelato una frase: pensa a ciò che brucia e si accorcia."},
+{icon:"🪞",name:"Specchio",desc:"Il vetro è annerito",text:"Sul vetro appare una parola: RIFLESSO. Qualcosa ti aspetta più avanti."},
+{icon:"📖",name:"Libro",desc:"Pagine strappate",text:"Una pagina recita: «Non fidarti delle porte che si aprono da sole»."},
+{icon:"🗝️",name:"Chiave rotta",desc:"Troppo corta per una serratura",text:"Sulla chiave è inciso il numero romano I."}
+],
+riddle:"Non sono viva, eppure consumo la mia vita.\nPiango senza occhi e scaccio il buio.\nChe cosa sono?",
+answers:["candela","una candela"],
+hints:["Pensa a un oggetto che può restare acceso durante la notte.","La risposta è uno degli oggetti che hai appena esaminato."],
+success:"Il primo sigillo si accende. La candela lascia cadere una piccola chiave nera."
+},
+{
+chapter:"Il corridoio degli specchi",title:"Il riflesso sbagliato",
+story:"Il corridoio sembra più lungo di prima. Quattro specchi riflettono la stanza, ma uno mostra una porta che non esiste.",
+objects:[
+{icon:"🪞",name:"Specchio crepato",desc:"Un riflesso capovolto",text:"Dietro il vetro leggi: «La verità guarda te, anche quando tu non guardi lei»."},
+{icon:"🖼️",name:"Ritratto",desc:"Un volto senza occhi",text:"Sul retro trovi tre segni: luna, luna, sole."},
+{icon:"📜",name:"Biglietto",desc:"Inchiostro sbiadito",text:"Il biglietto dice: «Per attraversare il vetro, nomina ciò che ti copia senza parlare»."},
+{icon:"🚪",name:"Porta dipinta",desc:"Non ha maniglia",text:"La porta è solo un dipinto. Ma dietro la cornice senti un colpo."}
+],
+riddle:"Non ho memoria, ma mostro il tuo volto.\nNon ho voce, ma ripeto ogni tuo gesto.\nChe cosa sono?",
+answers:["specchio","lo specchio"],
+hints:["Ti trovi davanti a uno proprio in questo momento.","È una superficie di vetro che riflette."],
+success:"Il secondo sigillo si spezza. Nel vetro appare una cifra: 13."
+},
+{
+chapter:"La stanza dell'orologio",title:"L'ora proibita",
+story:"Tredici candele circondano un orologio senza lancette. Sul pavimento qualcuno ha inciso un indovinello numerico.",
+objects:[
+{icon:"🕰️",name:"Orologio",desc:"Il quadrante è vuoto",text:"Sul retro: «Una dozzina non basta. Aggiungi un rintocco»."},
+{icon:"🕯️",name:"Candele",desc:"Una è più alta delle altre",text:"Contandole trovi tredici candele. Una goccia di cera forma il numero 13."},
+{icon:"📦",name:"Scatola",desc:"Ha una serratura numerica",text:"La scatola richiede un codice di due cifre."},
+{icon:"🧱",name:"Muro",desc:"Graffi profondi",text:"Tra i graffi distingui: «Non fermarti a dodici»."}
+],
+riddle:"Una dozzina di rintocchi non basta.\nUno in più apre il velo.\nQual è il codice di due cifre?",
+answers:["13","tredici","013"],
+hints:["Una dozzina equivale a dodici.","Aggiungi uno a 12."],
+success:"Il terzo sigillo si illumina. Dalla scatola cade una campanella d'argento."
+},
+{
+chapter:"La cappella dimenticata",title:"Il rintocco dei dannati",
+story:"Una cappella abbandonata si apre davanti a te. Quattro reliquie giacciono sull'altare, ma solo una può richiamare le anime.",
+objects:[
+{icon:"🔔",name:"Campana",desc:"Fredda e pesante",text:"Sotto la campana c'è scritto: «Il mio suono raggiunge chi non può più parlare»."},
+{icon:"🕯️",name:"Cero nero",desc:"La fiamma è blu",text:"Il cero è inciso con il simbolo di una luna."},
+{icon:"📿",name:"Rosario",desc:"Le perle sono spezzate",text:"Tra le perle trovi un foglietto: «Ascolta ciò che non ha voce»."},
+{icon:"⚰️",name:"Piccolo feretro",desc:"È vuoto",text:"Il coperchio si apre, ma dentro c'è soltanto polvere."}
+],
+riddle:"Non ho voce, ma posso chiamare i morti.\nNon ho gambe, ma il mio suono viaggia lontano.\nChe cosa sono?",
+answers:["campana","la campana"],
+hints:["È spesso appesa a una torre.","Quando viene colpita, produce un rintocco."],
+success:"Il quarto sigillo si spezza. Sull'altare appare l'ultima iscrizione: «Le anime sopravvivono finché qualcuno...»"
+},
+{
+chapter:"La cripta",title:"Il patto delle anime",
+story:"Le ombre si raccolgono intorno a te. La porta della cripta si chiude. Una voce ti offre un ultimo enigma: la risposta libererà le anime.",
+objects:[
+{icon:"📜",name:"Iscrizione",desc:"Incisa nella pietra",text:"«Vivo nel cuore di chi resta e custodisco chi è scomparso»."},
+{icon:"🪞",name:"Frammento di specchio",desc:"Riflette una figura",text:"Nel riflesso vedi i volti di persone che non ci sono più."},
+{icon:"🕯️",name:"Ultima candela",desc:"Quasi consumata",text:"La fiamma illumina una parola: PER SEMPRE."},
+{icon:"🗝️",name:"Chiave nera",desc:"Ora sembra completa",text:"La chiave porta una frase: «Apri la porta con ciò che non devi perdere»."}
+],
+riddle:"Non sono un oggetto né una porta.\nVivo nella mente e nel cuore di chi resta.\nImpedisco a chi è scomparso di svanire del tutto.\nChe cosa devi fare?",
+answers:["ricordare","ricorda","ricordo","ricordarle","ricordarli"],
+hints:["È ciò che facciamo per custodire la storia di qualcuno.","La risposta comincia con «ricord...»."],
+success:"L'ultimo sigillo si illumina. Le anime sono libere."
+}
+];
+let index=0,unlocked=false,hintLevel=0;
+let inventory=[];
+let found={};
+function norm(s){return s.toLocaleLowerCase("it").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[.,!?;:'"«»]/g,"").trim().replace(/\s+/g," ")}
+function updateInventory(){
+const box=$("inventory");box.innerHTML="";
+if(!inventory.length){box.innerHTML='<span class="item">Inventario vuoto</span>';return}
+inventory.forEach(item=>{const el=document.createElement("span");el.className="item";el.textContent="✦ "+item;box.appendChild(el)})
+}
+function render(){
+const r=rooms[index];unlocked=false;hintLevel=0;
+$("stage").textContent="STANZA "+(index+1)+" DI 5";
+$("count").textContent="SIGILLI: "+index+"/5";
+$("bar").style.width=(index/5*100)+"%";
+$("chapter").textContent=r.chapter;$("title").textContent=r.title;$("story").textContent=r.story;
+$("objects").innerHTML="";
+r.objects.forEach((o,i)=>{
+const b=document.createElement("button");b.className="object";
+b.innerHTML="<span>"+o.icon+"</span><strong>"+o.name+"</strong><br><small>"+o.desc+"</small>";
+b.type="button";b.addEventListener("click",()=>{
+$("message").textContent=o.text;
+if(!found[index+"-"+i]){found[index+"-"+i]=true;inventory.push(o.name);updateInventory()}
+});
+$("objects").appendChild(b)
+});
+$("puzzle").classList.remove("hidden");$("riddle").textContent=r.riddle;
+$("answer").value="";$("answer").disabled=false;$("answerForm").classList.remove("hidden");
+$("hint").classList.remove("hidden");$("hint").textContent="Primo indizio";
+$("hint2").classList.add("hidden");$("next").classList.add("hidden");$("message").textContent="";
+}
+$("answerForm").addEventListener("submit",e=>{
+e.preventDefault();if(unlocked)return;
+const answer=norm($("answer").value);
+if(rooms[index].answers.some(a=>norm(a)===answer)){
+unlocked=true;
+$("message").textContent="✦ "+rooms[index].success;
+$("answerForm").classList.add("hidden");$("hint").classList.add("hidden");$("hint2").classList.add("hidden");
+$("next").classList.remove("hidden");
+$("bar").style.width=((index+1)/5*100)+"%";
+$("count").textContent="SIGILLI: "+(index+1)+"/5";
+inventory.push("Sigillo "+(index+1));updateInventory();
+}else{$("message").textContent="La casa rifiuta la tua risposta... Esamina gli oggetti e riprova."}
+});
+$("hint").addEventListener("click",()=>{
+hintLevel=1;$("message").textContent="Indizio: "+rooms[index].hints[0];
+$("hint").textContent="Mostra un indizio più chiaro";$("hint2").classList.remove("hidden")
+});
+$("hint2").addEventListener("click",()=>{
+hintLevel=2;$("message").textContent="Secondo indizio: "+rooms[index].hints[1];
+$("hint2").classList.add("hidden")
+});
+$("next").addEventListener("click",()=>{
+if(index<rooms.length-1){index++;render()}
+else{$("room").classList.add("hidden");$("ending").classList.remove("hidden");$("bar").style.width="100%";$("count").textContent="SIGILLI: 5/5"}
+});
+$("restart").addEventListener("click",()=>{
+index=0;inventory=[];found={};updateInventory();
+$("ending").classList.add("hidden");$("room").classList.remove("hidden");render()
+});
+render();
+})();
+</script>
 </body>
 </html>
